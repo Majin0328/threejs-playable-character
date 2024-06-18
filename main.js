@@ -65,8 +65,8 @@ class BasicCharacterController {
 
       const loader = new FBXLoader(this._manager);
       loader.setPath('./resources/ELPRIMO/');
-      loader.load('walking (1).fbx', (a) => { _OnLoad('walk', a); });
-      loader.load('Drunk Run Forward (1).fbx', (a) => { _OnLoad('run', a); });
+      loader.load('WalkP.fbx', (a) => { _OnLoad('walk', a); });
+      loader.load('Ojala.fbx', (a) => { _OnLoad('run', a); });
       loader.load('Gunplay.fbx', (a) => { _OnLoad('idle', a); });
       loader.load('Standing Death Left 01.fbx', (a) => { _OnLoad('dancey', a); });
       loader.load('Flying Kick.fbx', (a) => { _OnLoad('patada', a); });
