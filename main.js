@@ -70,6 +70,8 @@ class BasicCharacterController {
       loader.load('Gunplay.fbx', (a) => { _OnLoad('idle', a); });
       loader.load('Standing Death Left 01.fbx', (a) => { _OnLoad('dancey', a); });
       loader.load('Flying Kick.fbx', (a) => { _OnLoad('patada', a); });
+      loader.load('Baile1.fbx', (a) => { _OnLoad('dance1', a); });
+      loader.load('Baile2.fbx', (a) => { _OnLoad('dance2', a); });
 
     });
   }
@@ -169,6 +171,8 @@ class BasicCharacterControllerInput {
       shift: false,
       dancey: false,
       patada: false,
+      dance1: false,
+      dance2: false,
     };
     document.addEventListener('keydown', (e) => this._onKeyDown(e), false);
     document.addEventListener('keyup', (e) => this._onKeyUp(e), false);
@@ -200,11 +204,12 @@ class BasicCharacterControllerInput {
         case 69: //  e
         this._keys.patada = true;
         break;
-        case 105: //  i
-        this._keys.shift = true;
+      
+        case 85: //  u
+        this._keys.dance1 = true;
         break;
-        case 111: //  o
-        this._keys.shift = true;
+        case 73: //  i
+        this._keys.dance2 = true;
         break;
     }
   }
@@ -235,11 +240,13 @@ class BasicCharacterControllerInput {
         case 69: //  e
         this._keys.patada = false;
         break;
-        case 105: //  i
         this._keys.shift = false;
         break;
-        case 111: //  o
-        this._keys.shift = false;
+        case 85: //  u
+        this._keys.dance1 = false;
+        break;
+        case 73: //  i
+        this._keys.dance2 = false;
         break;
     }
   }
@@ -293,6 +300,8 @@ class CharacterFSM extends FiniteStateMachine {
     this._AddState('run', RunState);
     this._AddState('dancey', DanceyState); // Add this line
     this._AddState('patada', PatadaState); // Add this line
+    this._AddState('dance1', Dance1State);  // Añadir dance1
+    this._AddState('dance2', Dance2State);  // Añadir dance2
 
   }
 };
@@ -337,6 +346,14 @@ class DanceyState extends State {
   }
 
   Update(_, input) {
+    if (input._keys.dance1) {
+      this._parent.SetState('dance1');
+      return;
+    }
+    if (input._keys.dance2) {
+      this._parent.SetState('dance2');
+      return;
+    }
     if (!input._keys.dancey) {
       this._parent.SetState('idle');
     }
@@ -379,6 +396,14 @@ class WalkState extends State {
   }
 
   Update(_, input) {
+    if (input._keys.dance1) {
+      this._parent.SetState('dance1');
+      return;
+    }
+    if (input._keys.dance2) {
+      this._parent.SetState('dance2');
+      return;
+    }
     if (input._keys.patada) {
       this._parent.SetState('patada');
       return;
@@ -434,6 +459,14 @@ class RunState extends State {
   }
 
   Update(timeElapsed, input) {
+    if (input._keys.dance1) {
+      this._parent.SetState('dance1');
+      return;
+    }
+    if (input._keys.dance2) {
+      this._parent.SetState('dance2');
+      return;
+    }
     if (input._keys.dancey) {
       this._parent.SetState('dancey');
       return;
@@ -453,7 +486,6 @@ class RunState extends State {
     this._parent.SetState('idle');
   }
 };
-
 
 class IdleState extends State {
   constructor(parent) {
@@ -483,6 +515,14 @@ class IdleState extends State {
   }
 
   Update(_, input) {
+    if (input._keys.dance1) {
+      this._parent.SetState('dance1');
+      return;
+    }
+    if (input._keys.dance2) {
+      this._parent.SetState('dance2');
+      return;
+    }
     
     if (input._keys.forward || input._keys.backward) {
       this._parent.SetState('walk');
@@ -527,11 +567,88 @@ class PatadaState extends State {
   }
 
   Update(_, input) {
+    if (input._keys.dance1) {
+      this._parent.SetState('dance1');
+      return;
+    }
+    if (input._keys.dance2) {
+      this._parent.SetState('dance2');
+      return;
+    }
     if (!input._keys.patada) {
       this._parent.SetState('idle');
     }
   }
 }
+
+class Dance1State extends State {
+  constructor(parent) {
+    super(parent);
+  }
+
+  get Name() {
+    return 'dance1';
+  }
+
+  Enter(prevState) {
+    const curAction = this._parent._proxy._animations['dance1'].action;
+    if (prevState) {
+      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+
+      curAction.enabled = true;
+      curAction.time = 0.0;
+      curAction.setEffectiveTimeScale(1.0);
+      curAction.setEffectiveWeight(1.0);
+      curAction.crossFadeFrom(prevAction, 0.5, true);
+      curAction.play();
+    } else {
+      curAction.play();
+    }
+  }
+
+  Exit() {}
+
+  Update(_, input) {
+    if (!input._keys.dance1) {
+      this._parent.SetState('idle');
+    }
+  }
+}
+
+class Dance2State extends State {
+  constructor(parent) {
+    super(parent);
+  }
+
+  get Name() {
+    return 'dance2';
+  }
+
+  Enter(prevState) {
+    const curAction = this._parent._proxy._animations['dance2'].action;
+    if (prevState) {
+      const prevAction = this._parent._proxy._animations[prevState.Name].action;
+
+      curAction.enabled = true;
+      curAction.time = 0.0;
+      curAction.setEffectiveTimeScale(1.0);
+      curAction.setEffectiveWeight(1.0);
+      curAction.crossFadeFrom(prevAction, 0.5, true);
+      curAction.play();
+    } else {
+      curAction.play();
+    }
+  }
+
+  Exit() {}
+
+  Update(_, input) {
+    if (!input._keys.dance2) {
+      this._parent.SetState('idle');
+    }
+  }
+}
+
 
 
 class CharacterControllerDemo {
@@ -574,6 +691,8 @@ class CharacterControllerDemo {
 // Configurar niebla (fog)
 this._scene.fog = new THREE.Fog(0xa2ada1, 0, 200);  // Color, near, far
    
+    this._SetupMusic();
+
     let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     light.position.set(-100, 100, 100);
     light.target.position.set(0, 0, 0);
@@ -628,6 +747,20 @@ this._scene.fog = new THREE.Fog(0xa2ada1, 0, 200);  // Color, near, far
 
     this._LoadAnimatedModel();
     this._RAF();
+  }
+
+  _SetupMusic() {
+    // Obtén el elemento de audio
+    this._bgMusic = document.getElementById('persona');
+  
+    // Asegúrate de que el audio está cargado
+    this._bgMusic.addEventListener('canplaythrough', () => {
+      // Empieza a reproducir la música
+      this._bgMusic.play();
+  
+      // Modificar el volumen del audio
+      this._bgMusic.volume = 0.1; // Valor entre 0 (silencio) y 1 (volumen máximo)
+    }, false);
   }
 
   _CheckCollisions(characterPosition) {
