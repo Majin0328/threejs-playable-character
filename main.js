@@ -612,8 +612,8 @@ this._scene.fog = new THREE.Fog(0xa2ada1, 0, 200);  // Color, near, far
     this._scene.add(plane);
 
      // Añadir el cubo negro al escenario
-  const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
-  const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const cubeGeometry = new THREE.BoxGeometry(10, 0, 10);
+  const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x0b5205 });
   this._collisionCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
   this._collisionCube.position.set(10, 0.5, 3); // Ajustar la posición del cubo
   this._collisionCube.castShadow = true;
@@ -723,19 +723,16 @@ this._scene.fog = new THREE.Fog(0xa2ada1, 0, 200);  // Color, near, far
       this._previousRAF = t;
     });
   }
-
   _Step(timeElapsed) {
     const timeElapsedS = timeElapsed * 0.001;
     if (this._mixers) {
       this._mixers.map(m => m.update(timeElapsedS));
     }
-
     if (this._controls) {
       this._controls.Update(timeElapsedS);
     }
   }
 }
-
 let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
